@@ -1,0 +1,29 @@
+version: '3.8'
+services:
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: db_flask
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+  web:
+    build: .
+    command: ["flask", "run", "--host=0.0.0.0"]
+    volumes:
+      - .:/app
+    ports:
+      - "5001:5000"
+    restart: always
+    depends_on:
+      - db
+    environment:
+      FLASK_APP: app.py
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://root:password@db:5432/db_flask
+volumes:
+  postgres_data:
